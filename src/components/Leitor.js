@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Camera } from "expo-camera";
+import { BarCodeScanner } from "expo-barcode-scanner";
 import { useNavigation } from "@react-navigation/native";
 import Button from "./Button";
 import Constants from "expo-constants";
 
 export default function Leitor() {
   const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(BarCodeScanner.Constants.Type.back);
   const [value, setValue] = useState("");
-  const [codeType, setCodeType] = useState("");
   const [loaded, setLoaded] = useState(true);
   const navigate = useNavigation();
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
   }, []);
@@ -28,14 +27,13 @@ export default function Leitor() {
   return (
     <View>
       {loaded && (
-        <Camera
+        <BarCodeScanner
           type={type}
           style={styles.cameraView}
           onBarCodeScanned={(e) => {
             setValue(e.data);
-            setCodeType(e.type);
           }}
-        ></Camera>
+        />
       )}
       <View style={styles.container}>
         <Text style={styles.valueText}>Valor: {value}</Text>
@@ -51,14 +49,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
-    marginTop: Constants.statusBarHeight + 50,
+    marginTop: Constants.statusBarHeight + 25,
   },
   valueText: {
     fontSize: 15,
     fontWeight: "bold",
   },
   cameraView: {
-    height: 600,
+    marginTop: Constants.statusBarHeight + 25,
+    height: 560,
     backgroundColor: "transparent",
   },
 });
